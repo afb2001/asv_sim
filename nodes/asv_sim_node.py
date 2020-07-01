@@ -10,7 +10,7 @@ import time
 import threading
 
 import rospy
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, Vector3
 from geometry_msgs.msg import TwistStamped
 from std_msgs.msg import Float64
 from std_msgs.msg import Float32
@@ -52,6 +52,7 @@ class AsvSim:
         self.heading_publisher = rospy.Publisher('/heading', NavEulerStamped, queue_size = 5)
         self.speed_publisher = rospy.Publisher('/sog', TwistStamped, queue_size = 5)
         self.clock_publisher = rospy.Publisher('/clock', Clock, queue_size = 5)
+        self.disturbance_publisher = rospy.Publisher('/disturbance_estimate', Vector3, queue_size=5)
         self.clock_factor_subscriber = rospy.Subscriber('/clock_factor', Float64, self.clock_factor_callback)
         self.cmd_vel_subscriber = rospy.Subscriber('/cmd_vel', Twist, self.cmd_vel_callback)
         self.reset_subscriber = rospy.Subscriber('/sim_reset', Bool, self.reset_callback)
@@ -128,6 +129,13 @@ class AsvSim:
         h.header.stamp = self.dynamics.last_update
         h.orientation.heading = math.degrees(self.dynamics.heading)
         self.heading_publisher.publish(h)
+
+        disturbance = Vector3()
+        speed = self.dynamics.environment.current['speed']
+        direction = math.radians(self.dynamics.environment.current['direction'])
+        disturbance.x = speed * math.cos(direction)
+        disturbance.y = speed * math.sin(direction)
+        self.disturbance_publisher.publish(disturbance)
         
         
 
