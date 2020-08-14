@@ -17,6 +17,9 @@ import geodesic
 start_lat =  43.073397415457535
 start_lon = -70.71054174878898
 
+# Portsmouth, NH, Pepperrell Cove map
+# start_lat = 43.07700
+# start_lon = -70.71108
 
 # Point Hope, Alaska
 #start_lat =  68.347
